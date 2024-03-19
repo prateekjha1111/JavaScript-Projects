@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     const taskInput = document.getElementById('task');
     const addTaskButton = document.getElementById('addTask');
@@ -10,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const taskText = taskInput.value.trim();
         if (taskText !== '') {
             addTask(taskText);
-            saveTaskToLocalStorage(taskText);
+            saveTaskToLocalStorage(taskText, false);
             taskInput.value = '';
         } else {
             alert('Please enter a task!');
@@ -19,11 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function addTask(taskText, isCompleted = false) {
         const li = document.createElement('li');
-        li.textContent = taskText;
-
-        if (isCompleted) {
-            li.classList.add('completed');
-        }
 
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
@@ -37,6 +33,10 @@ document.addEventListener('DOMContentLoaded', function() {
             updateTaskInLocalStorage(taskText, checkbox.checked);
         });
 
+        const taskSpan = document.createElement('span');
+        taskSpan.textContent = taskText;
+        taskSpan.classList.add('task-text');
+
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.classList.add('delete-btn');
@@ -46,13 +46,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         li.appendChild(checkbox);
+        li.appendChild(taskSpan);
         li.appendChild(deleteButton);
         taskList.appendChild(li);
+
+        if (isCompleted) {
+            li.classList.add('completed');
+        }
     }
 
-    function saveTaskToLocalStorage(taskText) {
+    function saveTaskToLocalStorage(taskText, isCompleted) {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        tasks.push({ text: taskText, completed: false });
+        tasks.push({ text: taskText, completed: isCompleted });
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
